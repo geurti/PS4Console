@@ -11,13 +11,25 @@ import subprocess
 import os
 import sys
 
+import readline
+from pyScripts import ConsoleCompleter
+
 DEVNULL = open(os.devnull, 'wb')
 
-exploitCmds = {'runpoc', 'dump', 'getmodules', 'getpid', 'getsysinfo', 'ls'}
+
+exploitCmds = {'runpoc':[], 'dump':['file','module'],'getmodules':[], 'getpid':[], 'getsysinfo':[], 'ls':[],'cd':[],'clear':[],'help':[]}
 exploitCmd  = ''
 browserPage = '/'
 
+validModuleNames = ["libSceSysmodule", "libSceNetCtl", "libSceRegMgr", "libSceRtc", "libScePad", "libSceOrbisCompat", "libSceSysCore", "libSceSystemService", "libSceSsl"]
+validModuleIDs	 = ["0xC", "0x1B", "0x1F", "0x20", "0x21", "0x23", "0x25", "0x26", "0x35"]
+
 def runConsoleInterpretter():
+
+	# Register autocompletion function
+	readline.set_completer(ConsoleCompleter.CommandCompleter(exploitCmds,validModuleNames).complete)
+	readline.parse_and_bind('tab: complete')
+
 	while True:
 		print ">",
 
@@ -142,8 +154,6 @@ class PS4Console(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
 				if 'module' in cmdToRun:
 					# List of valid modules for dumping
-					validModuleNames = ["libSceSysmodule", "libSceNetCtl", "libSceRegMgr", "libSceRtc", "libScePad", "libSceOrbisCompat", "libSceSysCore", "libSceSystemService", "libSceSsl"]
-					validModuleIDs	 = ["0xC", "0x1B", "0x1F", "0x20", "0x21", "0x23", "0x25", "0x26", "0x35"]
 
 					moduleToDump = ""
 
